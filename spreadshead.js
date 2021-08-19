@@ -1,7 +1,8 @@
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 const credentials = require('./service-account.json')
 
-async function accessSpreadsheet(name) {
+async function accessSpreadsheet(props = {}) {
+    let {name, index = 0} = props
     const doc = new GoogleSpreadsheet(process.env.SPREADSHEET_KEY)
 
     await doc.useServiceAccountAuth({
@@ -11,7 +12,11 @@ async function accessSpreadsheet(name) {
     await doc.loadInfo();
     //console.log(`Loaded doc: ` + doc.title)
 
-    return await doc.sheetsByTitle[name]; // or use doc.sheetsByIndex[2]
+    if (!!name) {
+        return doc.sheetsByTitle[name]
+    } else {
+        return doc.sheetsByIndex[index];
+    }
 }
 
 module.exports = {
